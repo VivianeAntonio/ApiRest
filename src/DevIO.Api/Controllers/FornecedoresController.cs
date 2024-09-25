@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
+using DevIO.Business.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevIO.Api.Controllers
@@ -9,12 +10,15 @@ namespace DevIO.Api.Controllers
     public class FornecedoresController : MainController
     {
         private readonly IFornecedorRepository _fornecedorRepository;
+        private readonly IFornecedorService _fornecedorService;
         private readonly IMapper _mapper;
 
         public FornecedoresController(IFornecedorRepository fornecedorRepository,
+                                      IFornecedorService fornecedorService,
                                       IMapper mapper)
         {
             _fornecedorRepository = fornecedorRepository;
+            _fornecedorService = fornecedorService;
             _mapper = mapper;
         }
 
@@ -35,6 +39,21 @@ namespace DevIO.Api.Controllers
                 return NotFound();
             
             return fornecedor;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<FornecedorViewModel>> Adicionar(FornecedorViewModel fornecedorViewModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var fornecedor = _mapper.Map<Fornecedor>(fornecedorViewModel);
+            var result = await _fornecedorService.Adicionar(fornecedor);
+
+            if (!result)
+                return BadRequest();
+
+            return Ok(fornecedor);
         }
 
         public async Task<FornecedorViewModel> ObterFornecedorProdutosEndereco(Guid id)
