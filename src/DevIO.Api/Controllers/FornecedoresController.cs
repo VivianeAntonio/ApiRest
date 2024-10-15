@@ -87,6 +87,29 @@ namespace DevIO.Api.Controllers
             return CustomResponse(fornecedorViewModel);
         }
 
+        [HttpGet("obter-endereco/{id:guid}")]
+        public async Task<ActionResult<EnderecoViewModel>> ObterEnderecoPorId(Guid id)
+        {
+            return _mapper.Map<EnderecoViewModel>(await _enderecoRepository.ObterPorId(id));
+        }
+
+        [HttpPut("atualizar-endereco/{id:guid}")]
+        public async Task<ActionResult<EnderecoViewModel>> AtualizarEndereco(Guid id, EnderecoViewModel enderecoViewModel)
+        {
+            if (id != enderecoViewModel.Id)
+            {
+                NotificarErro("O id informado não é o mesmo que foi passado na query");
+                return CustomResponse(enderecoViewModel);
+            }
+
+            if (!ModelState.IsValid)
+                return CustomResponse(ModelState);
+
+            await _fornecedorService.AtualizarEndereco(_mapper.Map<Endereco>(enderecoViewModel));
+
+            return CustomResponse(enderecoViewModel);
+        }
+
         public async Task<FornecedorViewModel> ObterFornecedorProdutosEndereco(Guid id)
         {
             return _mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorProdutosEndereco(id));
