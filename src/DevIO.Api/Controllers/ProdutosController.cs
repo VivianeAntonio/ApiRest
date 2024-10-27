@@ -29,5 +29,21 @@ namespace DevIO.Api.Controllers
         {
             return _mapper.Map<IEnumerable<ProdutoViewModel>>(await _produtoRepository.ObterProdutosFornecedores());                       
         }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<ProdutoViewModel>> ObterPorId(Guid id)
+        {
+            var produtoViewModel = await ObterProduto(id);
+
+            if (produtoViewModel == null)
+                return NotFound();
+
+            return produtoViewModel;
+        }
+
+        private async Task<ProdutoViewModel> ObterProduto(Guid id)
+        {
+            return _mapper.Map<ProdutoViewModel>(await _produtoRepository.ObterProdutoFornecedor(id));
+        }
     }
 }
