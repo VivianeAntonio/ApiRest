@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
+using DevIO.Business.Services;
 using DevIO.Data.Repository;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,20 @@ namespace DevIO.Api.Controllers
                 return NotFound();
 
             return produtoViewModel;
+        }
+
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult<ProdutoViewModel>> Excluir(Guid id)
+        {
+            var produto = await ObterProduto(id);
+
+            if (produto == null)
+                return NotFound();
+
+            await _produtoService.Remover(id);
+
+            return CustomResponse(produto);
         }
 
         private async Task<ProdutoViewModel> ObterProduto(Guid id)
